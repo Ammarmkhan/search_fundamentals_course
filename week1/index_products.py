@@ -112,7 +112,7 @@ def main(source_dir: str, index_name: str):
             docs.append(the_doc)
             
             if len(docs) == 2000:
-                bulk(client, docs)
+                bulk(client, docs, request_timeout=60))
                 docs = []
           
             
