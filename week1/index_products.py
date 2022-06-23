@@ -10,6 +10,7 @@ import logging
 import time
 import json
 
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 logging.basicConfig(format='%(levelname)s:%(message)s')
@@ -75,6 +76,9 @@ def get_opensearch():
     
     return client
 
+
+
+
 @click.command()
 @click.option('--source_dir', '-s', help='XML files source directory')
 @click.option('--index_name', '-i', default="bbuy_products", help="The name of the index to write to")
@@ -101,8 +105,17 @@ def main(source_dir: str, index_name: str):
                 continue
 
             #### Step 2.b: Create a valid OpenSearch Doc and bulk index 2000 docs at a time
-            the_doc = None
+            the_doc = doc
+            the_doc["_index"] = index_name
+            the_doc["_id"] = doc["sku"][0]
+            
             docs.append(the_doc)
+            
+            if len(docs) == 2000:
+                bulk(client, docs)
+                docs = []
+          
+            
     toc = time.perf_counter()
     logger.info(f'Done. Total docs: {docs_indexed}.  Total time: {((toc - tic) / 60):0.3f} mins.')
 
